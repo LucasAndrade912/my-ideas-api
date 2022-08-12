@@ -1,0 +1,8 @@
+node_modules/
+build/
+coverage/
+tmp/
+notes.md
+.vscode
+.DS_STORE
+.env
