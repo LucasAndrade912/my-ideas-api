@@ -1,0 +1,14 @@
+version: '3.1'
+services:
+  database:
+    image: postgres
+    ports:
+      - "7777:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=myIdeas
+  cache:
+    image: redis
+    ports:
+      - "5555:6379"
