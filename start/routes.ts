@@ -1,5 +1,3 @@
 import Route from '@ioc:Adonis/Core/Route'
 
-Route.get('/', async () => {
-  return { message: 'Hello My Ideas' }
-})
+Route.post('signup', 'UsersController.store')
