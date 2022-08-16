@@ -5,6 +5,18 @@ import Hash from '@ioc:Adonis/Core/Hash'
 import User from 'App/Models/User'
 
 export default class UsersController {
+  public async index({ response, auth }: HttpContextContract) {
+    if (auth.user) {
+      const userData = await User.findBy('email', auth.user.email)
+
+      if (userData) {
+        const { id, name, email, createdAt, updatedAt } = userData
+
+        return response.ok({ data: { id, name, email, createdAt, updatedAt } })
+      }
+    }
+  }
+
   public async auth({ request, response, auth }: HttpContextContract) {
     const { authorization } = request.headers()
 
