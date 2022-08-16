@@ -1,9 +1,34 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import CreateUserValidator from 'App/Validators/CreateUserValidator'
 import Redis from '@ioc:Adonis/Addons/Redis'
+import Hash from '@ioc:Adonis/Core/Hash'
 import User from 'App/Models/User'
 
 export default class UsersController {
+  public async auth({ request, response, auth }: HttpContextContract) {
+    const { authorization } = request.headers()
+
+    if (authorization) {
+      const [, data] = authorization.split(' ')
+      const dataDecoded = Buffer.from(data!, 'base64').toString('utf-8')
+      const [email, password] = dataDecoded.split(':')
+
+      const user = await User.findByOrFail('email', email)
+
+      if (!(await Hash.verify(user.password, password))) {
+        return response.unauthorized({ message: 'Invalid credentials' })
+      }
+
+      const token = await auth.use('api').generate(user, {
+        expiresIn: '7days',
+      })
+
+      return response.ok({ message: 'Login completed', token })
+    }
+
+    return response.badRequest({ message: 'Send all data' })
+  }
+
   public async store({ request, response, auth }: HttpContextContract) {
     const payload = await request.validate(CreateUserValidator)
 
