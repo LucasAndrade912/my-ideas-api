@@ -39,4 +39,28 @@ export default class IdeasController {
       return response.created({ message: 'Idea created', data: idea })
     }
   }
+
+  public async destroy({ request, response, auth, bouncer }: HttpContextContract) {
+    if (auth.user) {
+      const { id } = request.params()
+
+      const idea = await Idea.find(id)
+
+      if (!idea) {
+        return response.notFound({ message: 'Idea not exists' })
+      }
+
+      try {
+        await bouncer.authorize('deleteIdea', idea)
+
+        await idea.delete()
+
+        return response.ok({ message: 'Idea deleted' })
+      } catch {
+        return response.unauthorized({
+          message: 'You are not allowed to delete this Idea',
+        })
+      }
+    }
+  }
 }
