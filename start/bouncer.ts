@@ -6,6 +6,8 @@
  */
 
 import Bouncer from '@ioc:Adonis/Addons/Bouncer'
+import Idea from 'App/Models/Idea'
+import User from 'App/Models/User'
 
 /*
 |--------------------------------------------------------------------------
@@ -29,7 +31,9 @@ import Bouncer from '@ioc:Adonis/Addons/Bouncer'
 | NOTE: Always export the "actions" const from this file
 |****************************************************************
 */
-export const { actions } = Bouncer
+export const { actions } = Bouncer.define('viewIdea', (user: User, idea: Idea) => {
+  return idea.userId === user.id
+})
 
 /*
 |--------------------------------------------------------------------------
