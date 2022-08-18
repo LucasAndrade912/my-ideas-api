@@ -3,6 +3,16 @@ import CreateIdeaValidator from 'App/Validators/CreateIdeaValidator'
 import Idea from 'App/Models/Idea'
 
 export default class IdeasController {
+  public async index({ response, auth }: HttpContextContract) {
+    if (auth.user) {
+      const { id } = auth.user
+
+      const ideas = await Idea.query().where('userId', id)
+
+      return response.ok({ data: ideas })
+    }
+  }
+
   public async show({ request, response, auth, bouncer }: HttpContextContract) {
     if (auth.user) {
       const { id } = request.params()
