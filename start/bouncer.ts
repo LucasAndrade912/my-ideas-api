@@ -6,6 +6,8 @@ export const { actions } = Bouncer.define('viewIdea', (user: User, idea: Idea) =
   return idea.userId === user.id
 }).define('deleteIdea', (user: User, idea: Idea) => {
   return idea.userId === user.id
+}).define('updateIdea', (user: User, idea: Idea) => {
+  return idea.userId === user.id
 })
 
 export const { policies } = Bouncer.registerPolicies({})

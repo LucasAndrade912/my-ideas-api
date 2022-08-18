@@ -1,5 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import CreateIdeaValidator from 'App/Validators/CreateIdeaValidator'
+import UpdateIdeaValidator from 'App/Validators/UpdateIdeaValidator'
 import Idea from 'App/Models/Idea'
 
 export default class IdeasController {
@@ -47,6 +48,38 @@ export default class IdeasController {
       })
 
       return response.created({ message: 'Idea created', data: idea })
+    }
+  }
+
+  public async update({ request, response, auth, bouncer }: HttpContextContract) {
+    if (auth.user) {
+      const payload = await request.validate(UpdateIdeaValidator)
+
+      const { id } = request.params()
+
+      const idea = await Idea.find(id)
+
+      if (!idea) {
+        return response.notFound({ message: 'Idea not exists' })
+      }
+
+      try {
+        await bouncer.authorize('viewIdea', idea)
+
+        await idea
+          .merge({
+            title: payload.title,
+            description: payload.description,
+            durationTime: payload.durationTime as 'short' | 'medium' | 'long',
+          })
+          .save()
+
+        return response.ok({ message: 'Idea updated' })
+      } catch {
+        return response.unauthorized({
+          message: 'You are not allowed to view this Idea',
+        })
+      }
     }
   }
 
